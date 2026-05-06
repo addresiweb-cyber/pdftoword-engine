@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/docx@8.5.0/build/index.min.js"></script>
+    <style>
+        :root { --bg: #030712; --accent: #0ea5e9; --text: #f3f4f6; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; text-align: center; padding: 10px; margin: 0; overflow: hidden; }
+        .drop-area { border: 2px dashed #374151; border-radius: 12px; padding: 30px; cursor: pointer; background: #111827; }
+        .btn { display: none; background: var(--accent); color: white; padding: 12px; border-radius: 8px; border: none; width: 100%; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        #st { font-size: 10px; color: var(--accent); margin-top: 10px; text-transform: uppercase; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="drop-area" id="dz">
+        <input type="file" id="fi" hidden accept=".pdf">
+        <div id="it"><strong>Click to Convert PDF</strong><br><small style="color:#9ca3af">100% Private & Local</small></div>
+        <div id="st">READY</div>
+    </div>
+    <button class="btn" id="db">DOWNLOAD .DOCX</button>
+
+    <script>
+        const fi = document.getElementById('fi'), dz = document.getElementById('dz'), 
+              st = document.getElementById('st'), db = document.getElementById('db');
+
+        dz.onclick = () => fi.click();
+
+        fi.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            st.innerText = "Processing...";
+            try {
+                const pdfjsLib = window['pdfjs-dist/build/pdf'];
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                const sections = [];
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    st.innerText = `Converting Page ${i}/${pdf.numPages}`;
+                    const page = await pdf.getPage(i);
+                    const text = await page.getTextContent();
+                    
+                    const lines = {};
+                    text.items.forEach(item => {
+                        const y = Math.round(item.transform[5] / 4) * 4;
+                        if (!lines[y]) lines[y] = [];
+                        lines[y].push(item);
+                    });
+
+                    const children = Object.keys(lines).sort((a,b) => b-a).map(y => {
+                        const lineText = lines[y].sort((a,b) => a.transform[4] - b.transform[4]).map(it => it.str).join(" ");
+                        return new docx.Paragraph({ children: [new docx.TextRun({ text: lineText, size: 22 })] });
+                    });
+                    sections.push({ children });
+                }
+
+                const doc = new docx.Document({ sections });
+                const blob = await docx.Packer.toBlob(doc);
+                
+                st.innerText = "✓ Complete";
+                db.style.display = "block";
+                db.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = file.name.replace(".pdf", "") + "_Valipod.docx";
+                    a.click();
+                };
+            } catch (err) {
+                st.innerText = "Error: Browser Security Block";
+                console.error(err);
+            }
+        };
+    </script>
+</body>
+</html>
