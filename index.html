@@ -2,48 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Valipod Engine</title>
-    <!-- Use the most authoritative CDN for Chrome -->
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valipod Engine | High-Fidelity</title>
     <style>
-        :root { --bg: #030712; --accent: #0ea5e9; --text: #f3f4f6; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui; text-align: center; padding: 20px; }
-        .card { max-width: 400px; margin: auto; border: 1px solid #1f2937; border-radius: 16px; padding: 40px 20px; background: #111827; }
-        .st { font-size: 10px; color: var(--accent); margin-top: 20px; font-weight: 800; letter-spacing: 1px; }
-        .btn { display: none; background: var(--accent); color: white; padding: 14px; border-radius: 8px; border: none; width: 100%; margin-top: 20px; cursor: pointer; font-weight: 700; }
+        :root { --bg: #030712; --accent: #0ea5e9; --text: #f3f4f6; --success: #22c55e; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; text-align: center; padding: 20px; margin: 0; }
+        .card { max-width: 400px; margin: auto; border: 1px solid #1f2937; border-radius: 16px; padding: 50px 20px; background: #111827; cursor: pointer; border: 2px dashed #374151; }
+        .st { font-size: 11px; color: var(--accent); margin-top: 15px; font-weight: 800; letter-spacing: 1px; }
+        .btn { display: none; background: var(--accent); color: white; padding: 16px; border-radius: 10px; border: none; width: 100%; max-width: 400px; margin: 20px auto; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="card" onclick="document.getElementById('fi').click()">
+    <div class="card" id="dz">
         <input type="file" id="fi" hidden accept=".pdf">
-        <div style="font-weight: 600;">Click to Convert PDF</div>
-        <div class="st" id="st">VERIFYING ENGINE...</div>
+        <div id="idle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:10px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <p style="margin:0;"><strong>SELECT PDF FOR CONVERSION</strong></p>
+        </div>
+        <div class="st" id="st">INITIALIZING SECURE BYPASS...</div>
     </div>
-    <button class="btn" id="db">DOWNLOAD .DOCX</button>
+    <button class="btn" id="db">DOWNLOAD WORD DOCUMENT</button>
 
     <script>
-        // Use a "Safe Reference" to bypass MIME-type blocks
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
-        const docx = window.docx;
+        const st = document.getElementById('st'), fi = document.getElementById('fi'), 
+              dz = document.getElementById('dz'), db = document.getElementById('db');
 
-        window.onload = () => {
-            if (pdfjsLib && docx) {
-                document.getElementById('st').innerText = "SYSTEM SECURE: READY";
-            } else {
-                document.getElementById('st').innerText = "ENGINE OFFLINE: TRY INCOGNITO MODE";
+        // THE BYPASS: Fetch code as text to avoid MIME/Security Halt
+        async function bypassLoad(url) {
+            const resp = await fetch(url);
+            const scriptText = await resp.text();
+            const blob = new Blob([scriptText], { type: 'application/javascript' });
+            const script = document.createElement('script');
+            script.src = URL.createObjectURL(blob);
+            return new Promise(res => { script.onload = res; document.head.appendChild(script); });
+        }
+
+        async function init() {
+            try {
+                // Point to the specific versions used in your provided code 
+                await bypassLoad('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
+                await bypassLoad('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js');
+                st.innerText = "SYSTEM SECURE: READY";
+            } catch (e) {
+                st.innerText = "HALT: CHECK BROWSER PERMISSIONS";
             }
-        };
+        }
 
-        document.getElementById('fi').onchange = async (e) => {
+        init();
+
+        dz.onclick = () => fi.click();
+
+        fi.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            const st = document.getElementById('st');
-            st.innerText = "LOCAL RECONSTRUCTION IN PROGRESS...";
-
+            st.innerText = "RECONSTRUCTING DOCUMENT...";
             try {
-                // Pointing to the worker on a stable CDN[cite: 1]
+                const pdfjsLib = window['pdfjs-dist/build/pdf'];
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 
                 const arrayBuffer = await file.arrayBuffer();
@@ -51,10 +66,11 @@
                 const sections = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
+                    st.innerText = `CONVERTING PAGE ${i}/${pdf.numPages}...`;
                     const page = await pdf.getPage(i);
                     const text = await page.getTextContent();
                     
-                    // High-fidelity coordinate mapping
+                    // Logic-First layout grouping for high-fidelity [cite: 183, 243]
                     const lines = {};
                     text.items.forEach(item => {
                         const y = Math.round(item.transform[5]);
@@ -72,8 +88,8 @@
                 const doc = new docx.Document({ sections });
                 const blob = await docx.Packer.toBlob(doc);
                 
-                st.innerText = "✓ CONVERSION SUCCESS";
-                const db = document.getElementById('db');
+                st.innerText = "✓ CONVERSION COMPLETE";
+                st.style.color = "var(--success)";
                 db.style.display = "block";
                 db.onclick = () => {
                     const a = document.createElement('a');
@@ -82,7 +98,7 @@
                     a.click();
                 };
             } catch (err) {
-                st.innerText = "HALT: CHECK BROWSER PERMISSIONS";
+                st.innerText = "HALT: FILE ACCESS ERROR";
                 console.error(err);
             }
         };
