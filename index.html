@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Valipod Secure Engine</title>
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+    <title>Valipod Engine | Secure</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/docx@8.5.0/build/index.min.js"></script>
     <style>
         :root { --bg: #030712; --accent: #0ea5e9; --text: #f3f4f6; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; text-align: center; padding: 20px; }
-        .card { max-width: 400px; margin: 40px auto; border: 2px dashed #374151; border-radius: 16px; padding: 60px 20px; background: #111827; cursor: pointer; }
-        .st { font-size: 11px; color: var(--accent); margin-top: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .btn { display: none; background: var(--accent); color: white; padding: 16px; border-radius: 10px; border: none; width: 100%; max-width: 400px; margin-top: 20px; cursor: pointer; font-weight: bold; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui; text-align: center; padding: 20px; margin: 0; }
+        .card { max-width: 400px; margin: 40px auto; border: 2px dashed #374151; border-radius: 16px; padding: 50px 20px; background: #111827; cursor: pointer; }
+        #st { font-size: 11px; color: var(--accent); margin-top: 15px; font-weight: 800; text-transform: uppercase; }
+        .btn { display: none; background: var(--accent); color: white; padding: 16px; border-radius: 10px; border: none; width: 100%; max-width: 400px; cursor: pointer; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="card" id="dz">
         <input type="file" id="fi" hidden accept=".pdf">
-        <div id="it"><strong>SELECT PDF FILE</strong><br><small style="color:#9ca3af">Direct Local Reconstruction</small></div>
-        <div class="st" id="st">ENGINE INITIALIZING...</div>
+        <div id="it"><strong>SELECT PDF FILE</strong><br><small style="color:#9ca3af">Direct Local Conversion</small></div>
+        <div id="st">READY</div>
     </div>
     <button class="btn" id="db">DOWNLOAD WORD DOCUMENT</button>
 
@@ -25,41 +25,34 @@
         const st = document.getElementById('st'), fi = document.getElementById('fi'), 
               dz = document.getElementById('dz'), db = document.getElementById('db');
 
-        // Bypassing the "File Access Error" by creating a local Worker Proxy
-        async function getSafeWorker() {
-            const workerUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-            const response = await fetch(workerUrl);
-            const script = await response.text();
-            const blob = new Blob([script], { type: 'application/javascript' });
-            return URL.createObjectURL(blob);
-        }
-
         dz.onclick = () => fi.click();
-
-        // Check if libraries loaded
-        window.onload = () => { if(window['pdfjs-dist/build/pdf']) st.innerText = "READY"; };
 
         fi.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            st.innerText = "OPENING SECURE SANDBOX...";
+            st.innerText = "LOCAL PROCESSING STARTED...";
             
             try {
+                // THE CRITICAL FIX: Disable workers entirely to bypass Chrome Permission Halt
                 const pdfjsLib = window['pdfjs-dist/build/pdf'];
-                // This is the critical fix for Chrome "File Access" errors
-                pdfjsLib.GlobalWorkerOptions.workerSrc = await getSafeWorker();
+                pdfjsLib.GlobalWorkerOptions.workerSrc = ''; // Leave blank or false
 
                 const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                const sections = [];
+                
+                // Loading PDF with "DisableWorker: true" to force main-thread execution
+                const pdf = await pdfjsLib.getDocument({
+                    data: arrayBuffer,
+                    disableWorker: true, // Forces Chrome to allow the code to run
+                    verbosity: 0
+                }).promise;
 
+                const sections = [];
                 for (let i = 1; i <= pdf.numPages; i++) {
-                    st.innerText = `READING PAGE ${i}/${pdf.numPages}`;
+                    st.innerText = `CONVERTING PAGE ${i}/${pdf.numPages}`;
                     const page = await pdf.getPage(i);
                     const text = await page.getTextContent();
                     
-                    // Logic-First Layout Mapping
                     const lines = {};
                     text.items.forEach(item => {
                         const y = Math.round(item.transform[5]);
@@ -77,7 +70,7 @@
                 const doc = new docx.Document({ sections });
                 const blob = await docx.Packer.toBlob(doc);
                 
-                st.innerText = "✓ SUCCESSFUL";
+                st.innerText = "✓ CONVERSION SUCCESSFUL";
                 db.style.display = "block";
                 db.onclick = () => {
                     const a = document.createElement('a');
@@ -86,8 +79,8 @@
                     a.click();
                 };
             } catch (err) {
-                st.innerText = "HALT: LOCAL PERMISSION DENIED";
-                console.error("Detailed Error:", err);
+                st.innerText = "SYSTEM ERROR: TRY SMALLER PDF";
+                console.error(err);
             }
         };
     </script>
