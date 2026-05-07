@@ -2,24 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valipod Engine | High-Fidelity</title>
+    <title>Valipod Secure Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
     <style>
-        :root { --bg: #030712; --accent: #0ea5e9; --text: #f3f4f6; --success: #22c55e; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; text-align: center; padding: 20px; margin: 0; }
-        .card { max-width: 400px; margin: auto; border: 1px solid #1f2937; border-radius: 16px; padding: 50px 20px; background: #111827; cursor: pointer; border: 2px dashed #374151; }
-        .st { font-size: 11px; color: var(--accent); margin-top: 15px; font-weight: 800; letter-spacing: 1px; }
-        .btn { display: none; background: var(--accent); color: white; padding: 16px; border-radius: 10px; border: none; width: 100%; max-width: 400px; margin: 20px auto; font-weight: bold; cursor: pointer; }
+        :root { --bg: #030712; --accent: #0ea5e9; --text: #f3f4f6; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; text-align: center; padding: 20px; }
+        .card { max-width: 400px; margin: 40px auto; border: 2px dashed #374151; border-radius: 16px; padding: 60px 20px; background: #111827; cursor: pointer; }
+        .st { font-size: 11px; color: var(--accent); margin-top: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .btn { display: none; background: var(--accent); color: white; padding: 16px; border-radius: 10px; border: none; width: 100%; max-width: 400px; margin-top: 20px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="card" id="dz">
         <input type="file" id="fi" hidden accept=".pdf">
-        <div id="idle">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:10px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-            <p style="margin:0;"><strong>SELECT PDF FOR CONVERSION</strong></p>
-        </div>
-        <div class="st" id="st">INITIALIZING SECURE BYPASS...</div>
+        <div id="it"><strong>SELECT PDF FILE</strong><br><small style="color:#9ca3af">Direct Local Reconstruction</small></div>
+        <div class="st" id="st">ENGINE INITIALIZING...</div>
     </div>
     <button class="btn" id="db">DOWNLOAD WORD DOCUMENT</button>
 
@@ -27,50 +25,41 @@
         const st = document.getElementById('st'), fi = document.getElementById('fi'), 
               dz = document.getElementById('dz'), db = document.getElementById('db');
 
-        // THE BYPASS: Fetch code as text to avoid MIME/Security Halt
-        async function bypassLoad(url) {
-            const resp = await fetch(url);
-            const scriptText = await resp.text();
-            const blob = new Blob([scriptText], { type: 'application/javascript' });
-            const script = document.createElement('script');
-            script.src = URL.createObjectURL(blob);
-            return new Promise(res => { script.onload = res; document.head.appendChild(script); });
+        // Bypassing the "File Access Error" by creating a local Worker Proxy
+        async function getSafeWorker() {
+            const workerUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+            const response = await fetch(workerUrl);
+            const script = await response.text();
+            const blob = new Blob([script], { type: 'application/javascript' });
+            return URL.createObjectURL(blob);
         }
-
-        async function init() {
-            try {
-                // Point to the specific versions used in your provided code 
-                await bypassLoad('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
-                await bypassLoad('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js');
-                st.innerText = "SYSTEM SECURE: READY";
-            } catch (e) {
-                st.innerText = "HALT: CHECK BROWSER PERMISSIONS";
-            }
-        }
-
-        init();
 
         dz.onclick = () => fi.click();
+
+        // Check if libraries loaded
+        window.onload = () => { if(window['pdfjs-dist/build/pdf']) st.innerText = "READY"; };
 
         fi.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            st.innerText = "RECONSTRUCTING DOCUMENT...";
+            st.innerText = "OPENING SECURE SANDBOX...";
+            
             try {
                 const pdfjsLib = window['pdfjs-dist/build/pdf'];
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+                // This is the critical fix for Chrome "File Access" errors
+                pdfjsLib.GlobalWorkerOptions.workerSrc = await getSafeWorker();
 
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
                 const sections = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
-                    st.innerText = `CONVERTING PAGE ${i}/${pdf.numPages}...`;
+                    st.innerText = `READING PAGE ${i}/${pdf.numPages}`;
                     const page = await pdf.getPage(i);
                     const text = await page.getTextContent();
                     
-                    // Logic-First layout grouping for high-fidelity [cite: 183, 243]
+                    // Logic-First Layout Mapping
                     const lines = {};
                     text.items.forEach(item => {
                         const y = Math.round(item.transform[5]);
@@ -88,8 +77,7 @@
                 const doc = new docx.Document({ sections });
                 const blob = await docx.Packer.toBlob(doc);
                 
-                st.innerText = "✓ CONVERSION COMPLETE";
-                st.style.color = "var(--success)";
+                st.innerText = "✓ SUCCESSFUL";
                 db.style.display = "block";
                 db.onclick = () => {
                     const a = document.createElement('a');
@@ -98,8 +86,8 @@
                     a.click();
                 };
             } catch (err) {
-                st.innerText = "HALT: FILE ACCESS ERROR";
-                console.error(err);
+                st.innerText = "HALT: LOCAL PERMISSION DENIED";
+                console.error("Detailed Error:", err);
             }
         };
     </script>
