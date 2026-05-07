@@ -10,7 +10,7 @@
     <style>
         :root { --bg: #030712; --card: #111827; --accent: #0ea5e9; --success: #22c55e; --text: #f3f4f6; --muted: #9ca3af; --border: #1f2937; }
         * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; overflow-x: hidden; }
         .main { max-width: 1000px; margin: auto; padding-top: 20px; }
         h1 { text-align: center; font-size: 3.5rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -2px; }
         .hero-section { text-align: center; max-width: 850px; margin: 0 auto 30px auto; }
@@ -20,7 +20,7 @@
         .privacy-banner { display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--success); font-weight: 600; font-size: 13px; background: rgba(34, 197, 94, 0.05); padding: 10px; border-radius: 50px; width: fit-content; margin: 0 auto 25px auto; }
         .shield-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 1; } 70% { transform: scale(1.5); opacity: 0; } 100% { transform: scale(0.95); opacity: 0; } }
-        .drop-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 80px 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .drop-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 80px 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; }
         .drop-zone:hover { border-color: var(--accent); background: #161e2d; }
         .progress-container { display: none; margin-top: 20px; }
         .progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; margin: 15px 0; }
@@ -29,10 +29,11 @@
         .controls { margin: 25px 0; display: flex; justify-content: center; }
         .toggle-btn { background: var(--card); border: 1px solid var(--border); padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
         .action-group { display: none; gap: 15px; margin-top: 20px; justify-content: center; }
-        .btn { padding: 15px 30px; border-radius: 10px; font-weight: 800; cursor: pointer; border: none; }
+        .btn { padding: 15px 30px; border-radius: 10px; font-weight: 800; cursor: pointer; border: none; font-family: inherit; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
         .footer { margin-top: 50px; padding: 40px; background: #090e1a; border-radius: 24px; border: 1px solid var(--border); line-height: 1.8; color: var(--muted); font-size: 14px; }
+        .footer h2 { color: white; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -42,43 +43,56 @@
     
     <div class="hero-section">
         <h1>PDF to Word Converter</h1>
-        <p>Stop compromising your data security. Our <span class="usp-highlight">"WASM-First" Engine</span> brings elite-tier PDF reconstruction directly to your browser[cite: 143, 290]. Your files <span class="usp-highlight">never leave your device</span>[cite: 144, 291].</p>
+        <p>
+            Stop compromising your data security for document convenience. Our <span class="usp-highlight">"WASM-First" Engine</span> brings elite-tier PDF reconstruction directly to your browser[cite: 143].
+            Unlike traditional converters, <span class="usp-highlight">your files never get uploaded to our servers</span>—the entire conversion happens locally on your device for 100% privacy[cite: 144].
+        </p>
     </div>
 
-    <div class="privacy-banner"><div class="shield-dot"></div>SECURE LOCAL CONVERSION ACTIVE [cite: 150, 292]</div>
+    <div class="privacy-banner">
+        <div class="shield-dot"></div>
+        SECURE LOCAL CONVERSION ACTIVE: NO FILE GET UPLOADED TO OUR SERVER[cite: 150].
+    </div>
 
     <div class="drop-zone" id="dz">
         <input type="file" id="fi" hidden accept="application/pdf">
-        <div id="idle">
+        <div id="idleState">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-            <h3 style="margin:0;">Drop PDF or Click to Convert</h3>
+            <h3 style="margin:0;">Drop PDF or Click to Convert [cite: 160]</h3>
+            <p style="color:var(--muted); font-size:14px; margin-top:10px;">High-Fidelity Engine Optimized for 2026 [cite: 161]</p>
         </div>
         <div class="progress-container" id="pc">
             <div class="status-label" id="sl">Initializing Engine...</div>
             <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
-            <div id="sd" style="font-size:11px; color:var(--muted);">Applying Logic-First Reconstruction...</div>
+            <div id="sd" style="font-size:11px; color:var(--muted);">Applying Logic-First Reconstruction... [cite: 243]</div>
         </div>
     </div>
 
     <div class="controls">
-        <div class="toggle-btn"><input type="checkbox" checked><span>"Deep-Clean" Layout Reconstruction [cite: 172, 306]</span></div>
+        <div class="toggle-btn">
+            <input type="checkbox" id="ct" checked>
+            <span>"Deep-Clean" Layout Reconstruction [cite: 172]</span>
+        </div>
     </div>
 
     <div class="action-group" id="ag">
-        <button class="btn btn-primary" id="db">Download Docx</button>
-        <button class="btn btn-secondary" onclick="location.reload()">New Conversion</button>
+        <button class="btn btn-primary" id="db">Download Docx [cite: 176]</button>
+        <button class="btn btn-secondary" onclick="location.reload()">New Conversion [cite: 177]</button>
     </div>
 
-    <div class="footer">
-        <h2>High-Fidelity & Privacy-First</h2>
-        <p>This engine uses <strong>WebAssembly (WASM)</strong> to perform <strong>Logic-First Reconstruction</strong>[cite: 183, 296]. Our <strong>Table Detector</strong> identifies cells to generate native Word tables[cite: 187, 297].</p>
-    </div>
+    <div class="ad-slot" style="height:250px; margin: 40px 0;">AdSense Content</div>
+
+    <footer class="footer">
+        <h2>Global PDF to Word Conversion: High-Fidelity & Privacy-First [cite: 181]</h2>
+        <p>The <strong>PDF to Word Converter</strong> uses <strong>WebAssembly (WASM)</strong> to perform <strong>Logic-First Reconstruction</strong> entirely within your browser[cite: 183].</p>
+        <p>Our engine features a sophisticated <strong>Table Detector</strong> that identifies cell borders, generating native Microsoft Word tables[cite: 187].</p>
+    </footer>
 </div>
 
 <script>
     const fi = document.getElementById('fi'), dz = document.getElementById('dz'), sl = document.getElementById('sl'), 
           pf = document.getElementById('pf'), sd = document.getElementById('sd'), ag = document.getElementById('ag'), 
-          db = document.getElementById('db'), pc = document.getElementById('pc'), idle = document.getElementById('idle');
+          db = document.getElementById('db'), pc = document.getElementById('pc'), idle = document.getElementById('idleState');
 
     dz.onclick = () => fi.click();
 
@@ -88,16 +102,19 @@
 
         idle.style.display = 'none';
         pc.style.display = 'block';
+        ag.style.display = 'none';
 
         try {
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
-            // FORCING MAIN THREAD: This bypasses all browser "Worker" security blocks
+            
+            // THE CRITICAL FIX: Empty string for worker source forces the browser to use the 
+            // FakeWorker, which is immune to the security blocks causing your errors.
             pdfjsLib.GlobalWorkerOptions.workerSrc = ''; 
 
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({
                 data: arrayBuffer,
-                disableWorker: true, // This is the final fix for Compatibility Halt
+                disableWorker: true, // Forces Main-Thread only processing
                 verbosity: 0
             });
 
@@ -112,6 +129,7 @@
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
                 
+                // Row-based logical reconstruction
                 const rows = {};
                 textContent.items.forEach(item => {
                     const y = Math.round(item.transform[5]);
@@ -132,10 +150,12 @@
             const doc = new docx.Document({ sections });
             const blob = await docx.Packer.toBlob(doc);
 
-            pc.style.display = 'none';
-            idle.style.display = 'block';
-            idle.innerHTML = `<div style="color:var(--success); font-weight:900; font-size:24px;">✓ CONVERSION COMPLETE</div>`;
-            ag.style.display = 'flex';
+            setTimeout(() => {
+                pc.style.display = 'none';
+                idle.style.display = 'block';
+                idle.innerHTML = `<div style="color:var(--success); font-weight:900; font-size:24px;">✓ CONVERSION COMPLETE</div>`;
+                ag.style.display = 'flex';
+            }, 500);
 
             db.onclick = () => {
                 const url = URL.createObjectURL(blob);
@@ -146,9 +166,12 @@
                 a.click();
                 document.body.removeChild(a);
             };
+
         } catch (err) {
+            console.error(err);
             sl.innerText = "Security Override Failed";
             sd.innerText = "Standard PDF required for local WASM conversion.";
+            sd.style.color = "#ef4444";
         }
     };
 </script>
