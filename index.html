@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valipod Engine | Secure</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #030712; --card: #111827; --accent: #0ea5e9; --success: #22c55e; --text: #f3f4f6; --muted: #9ca3af; --border: #1f2937; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; text-align: center; }
+        .main { max-width: 800px; margin: auto; padding-top: 40px; }
+        .hero h1 { font-size: 3rem; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
+        .hero p { color: var(--muted); margin-bottom: 30px; font-size: 1.1rem; }
+        .drop-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 80px 40px; cursor: pointer; transition: 0.3s; }
+        .drop-zone:hover { border-color: var(--accent); background: #161e2d; }
+        .st { font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 20px; text-transform: uppercase; }
+        .btn { display: none; background: var(--accent); color: white; padding: 16px 32px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; margin-top: 20px; width: 100%; max-width: 400px; }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="hero">
+            <h1>PDF to Word</h1>
+            <p>High-fidelity, private reconstruction that stays in your browser.</p>
+        </div>
+
+        <div class="drop-zone" id="dz">
+            <input type="file" id="fi" hidden accept="application/pdf">
+            <div id="idle">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                <h3 style="margin:0;">Click to Convert PDF</h3>
+            </div>
+            <div class="st" id="st">INITIALIZING ENGINE...</div>
+        </div>
+        <button class="btn" id="db">DOWNLOAD WORD (.DOCX)</button>
+    </div>
+
+    <script>
+        const st = document.getElementById('st'), fi = document.getElementById('fi'), 
+              dz = document.getElementById('dz'), db = document.getElementById('db');
+
+        // Linear initialization: Force main-thread if worker is restricted
+        window.onload = () => {
+            if (window['pdfjs-dist/build/pdf']) st.innerText = "SECURE ENGINE READY";
+        };
+
+        dz.onclick = () => fi.click();
+
+        fi.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            st.innerText = "RECONSTRUCTING DOCUMENT...";
+            try {
+                const pdfjsLib = window['pdfjs-dist/build/pdf'];
+                pdfjsLib.GlobalWorkerOptions.workerSrc = ''; // Use local thread for stability
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer, disableWorker: true}).promise;
+                const sections = [];
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    st.innerText = `PROCESSING PAGE ${i}/${pdf.numPages}...`;
+                    const page = await pdf.getPage(i);
+                    const text = await page.getTextContent();
+                    
+                    const lines = {};
+                    text.items.forEach(item => {
+                        const y = Math.round(item.transform[5]);
+                        if (!lines[y]) lines[y] = [];
+                        lines[y].push(item);
+                    });
+
+                    const children = Object.keys(lines).sort((a,b) => b-a).map(y => {
+                        const lineText = lines[y].sort((a,b) => a.transform[4] - b.transform[4]).map(it => it.str).join(" ");
+                        return new docx.Paragraph({ children: [new docx.TextRun({ text: lineText, size: 22 })] });
+                    });
+                    sections.push({ children });
+                }
+
+                const doc = new docx.Document({ sections });
+                const blob = await docx.Packer.toBlob(doc);
+                
+                st.innerText = "✓ CONVERSION COMPLETE";
+                st.style.color = "var(--success)";
+                db.style.display = "inline-block";
+                db.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = file.name.replace(".pdf", "") + "_Valipod.docx";
+                    a.click();
+                };
+            } catch (err) {
+                st.innerText = "HALT: CHECK FILE PERMISSIONS";
+                console.error(err);
+            }
+        };
+    </script>
+</body>
+</html>
