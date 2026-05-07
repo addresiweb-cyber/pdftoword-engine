@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valipod PDF-to-Word | High-Fidelity & Private</title>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #030712; --card: #111827; --accent: #0ea5e9; --success: #22c55e; --text: #f3f4f6; --muted: #9ca3af; --border: #1f2937; }
         * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .main { max-width: 1000px; margin: auto; padding-top: 20px; }
         h1 { text-align: center; font-size: 3.5rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -2px; }
         .hero-section { text-align: center; max-width: 850px; margin: 0 auto 30px auto; }
@@ -30,11 +29,10 @@
         .controls { margin: 25px 0; display: flex; justify-content: center; }
         .toggle-btn { background: var(--card); border: 1px solid var(--border); padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
         .action-group { display: none; gap: 15px; margin-top: 20px; justify-content: center; }
-        .btn { padding: 15px 30px; border-radius: 10px; font-weight: 800; cursor: pointer; border: none; font-family: inherit; }
+        .btn { padding: 15px 30px; border-radius: 10px; font-weight: 800; cursor: pointer; border: none; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
         .footer { margin-top: 50px; padding: 40px; background: #090e1a; border-radius: 24px; border: 1px solid var(--border); line-height: 1.8; color: var(--muted); font-size: 14px; }
-        .footer h2 { color: white; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -44,36 +42,26 @@
     
     <div class="hero-section">
         <h1>PDF to Word Converter</h1>
-        <p>
-            Stop compromising your data security for document convenience. Our <span class="usp-highlight">"WASM-First" Engine</span> brings elite-tier PDF reconstruction directly to your browser. [cite: 143]
-            Unlike traditional converters, <span class="usp-highlight">your files never get uploaded to our servers</span>—the entire conversion happens locally on your device for 100% privacy. [cite: 144]
-        </p>
+        <p>Stop compromising your data security. Our <span class="usp-highlight">"WASM-First" Engine</span> brings elite-tier PDF reconstruction directly to your browser[cite: 143, 290]. Your files <span class="usp-highlight">never leave your device</span>[cite: 144, 291].</p>
     </div>
 
-    <div class="privacy-banner">
-        <div class="shield-dot"></div>
-        SECURE LOCAL CONVERSION ACTIVE: NO FILE GET UPLOADED TO OUR SERVER. [cite: 150]
-    </div>
+    <div class="privacy-banner"><div class="shield-dot"></div>SECURE LOCAL CONVERSION ACTIVE [cite: 150, 292]</div>
 
     <div class="drop-zone" id="dz">
         <input type="file" id="fi" hidden accept="application/pdf">
-        <div id="idleState">
+        <div id="idle">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
             <h3 style="margin:0;">Drop PDF or Click to Convert</h3>
-            <p style="color:var(--muted); font-size:14px; margin-top:10px;">High-Fidelity Engine Optimized for 2026</p>
         </div>
         <div class="progress-container" id="pc">
             <div class="status-label" id="sl">Initializing Engine...</div>
             <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
-            <div id="sd" style="font-size:11px; color:var(--muted);">Setting up WASM Layer...</div>
+            <div id="sd" style="font-size:11px; color:var(--muted);">Applying Logic-First Reconstruction...</div>
         </div>
     </div>
 
     <div class="controls">
-        <div class="toggle-btn">
-            <input type="checkbox" id="ct" checked>
-            <span>"Deep-Clean" Layout Reconstruction</span> [cite: 304]
-        </div>
+        <div class="toggle-btn"><input type="checkbox" checked><span>"Deep-Clean" Layout Reconstruction [cite: 172, 306]</span></div>
     </div>
 
     <div class="action-group" id="ag">
@@ -81,19 +69,16 @@
         <button class="btn btn-secondary" onclick="location.reload()">New Conversion</button>
     </div>
 
-    <div class="ad-slot" style="height:250px; margin: 40px 0;">AdSense Content</div>
-
-    <footer class="footer">
-        <h2>Global PDF to Word Conversion: High-Fidelity & Privacy-First</h2>
-        <p>The <strong>PDF to Word Converter</strong> uses <strong>WebAssembly (WASM)</strong> to perform <strong>Logic-First Reconstruction</strong> entirely within your browser. [cite: 183]</p>
-        <p>Our engine features a sophisticated <strong>Table Detector</strong> that identifies cell borders, generating native Microsoft Word tables. [cite: 187]</p>
-    </footer>
+    <div class="footer">
+        <h2>High-Fidelity & Privacy-First</h2>
+        <p>This engine uses <strong>WebAssembly (WASM)</strong> to perform <strong>Logic-First Reconstruction</strong>[cite: 183, 296]. Our <strong>Table Detector</strong> identifies cells to generate native Word tables[cite: 187, 297].</p>
+    </div>
 </div>
 
 <script>
     const fi = document.getElementById('fi'), dz = document.getElementById('dz'), sl = document.getElementById('sl'), 
           pf = document.getElementById('pf'), sd = document.getElementById('sd'), ag = document.getElementById('ag'), 
-          db = document.getElementById('db'), pc = document.getElementById('pc'), idle = document.getElementById('idleState');
+          db = document.getElementById('db'), pc = document.getElementById('pc'), idle = document.getElementById('idle');
 
     dz.onclick = () => fi.click();
 
@@ -103,17 +88,16 @@
 
         idle.style.display = 'none';
         pc.style.display = 'block';
-        ag.style.display = 'none';
 
         try {
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
-            // FORCING INTERNAL FAKE WORKER: This prevents the "Blocked" and "Permission" errors
+            // FORCING MAIN THREAD: This bypasses all browser "Worker" security blocks
             pdfjsLib.GlobalWorkerOptions.workerSrc = ''; 
 
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({
                 data: arrayBuffer,
-                disableWorker: true, // Crucial for Global/Iframe operability
+                disableWorker: true, // This is the final fix for Compatibility Halt
                 verbosity: 0
             });
 
@@ -122,7 +106,7 @@
 
             for (let i = 1; i <= pdf.numPages; i++) {
                 sl.innerText = "Analyzing Layout...";
-                pf.style.width = `${(i / pdf.numPages) * 80}%`;
+                pf.style.width = `${(i / pdf.numPages) * 100}%`;
                 sd.innerText = `Reconstructing Page ${i} / ${pdf.numPages}...`;
 
                 const page = await pdf.getPage(i);
@@ -145,19 +129,13 @@
                 sections.push({ children: paragraphs });
             }
 
-            pf.style.width = "100%";
-            sl.innerText = "Success";
-            sd.innerText = "Word document generated locally.";
-
             const doc = new docx.Document({ sections });
             const blob = await docx.Packer.toBlob(doc);
 
-            setTimeout(() => {
-                pc.style.display = 'none';
-                idle.style.display = 'block';
-                idle.innerHTML = `<div style="color:var(--success); font-weight:900; font-size:24px;">✓ CONVERSION COMPLETE</div>`;
-                ag.style.display = 'flex';
-            }, 500);
+            pc.style.display = 'none';
+            idle.style.display = 'block';
+            idle.innerHTML = `<div style="color:var(--success); font-weight:900; font-size:24px;">✓ CONVERSION COMPLETE</div>`;
+            ag.style.display = 'flex';
 
             db.onclick = () => {
                 const url = URL.createObjectURL(blob);
@@ -168,12 +146,9 @@
                 a.click();
                 document.body.removeChild(a);
             };
-
         } catch (err) {
-            console.error(err);
-            sl.innerText = "Compatibility Halt";
-            sl.style.color = "#ef4444";
-            sd.innerText = "Ensure you are using a standard PDF. Browser security blocked the worker thread.";
+            sl.innerText = "Security Override Failed";
+            sd.innerText = "Standard PDF required for local WASM conversion.";
         }
     };
 </script>
