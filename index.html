@@ -3,54 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valipod PDF-to-Word | Private & Secure</title>
+    <title>Valipod Engine | High-Fidelity</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #030712; --card: #111827; --accent: #0ea5e9; --success: #22c55e; --text: #f3f4f6; --muted: #9ca3af; --border: #1f2937; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .main-card { width: 100%; max-width: 500px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; }
-        .hero h1 { font-size: 2.2rem; font-weight: 900; margin: 0 0 10px 0; letter-spacing: -1px; background: linear-gradient(to right, #fff, #9ca3af); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { color: var(--muted); font-size: 0.95rem; margin-bottom: 30px; }
-        .drop-zone { border: 2px dashed var(--border); border-radius: 16px; padding: 60px 20px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .wrapper { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 35px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .hero h1 { font-size: 2rem; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        .hero p { color: var(--muted); font-size: 0.9rem; margin-bottom: 25px; }
+        .drop-zone { border: 2px dashed var(--border); border-radius: 16px; padding: 50px 20px; cursor: pointer; transition: 0.3s; }
         .drop-zone:hover { border-color: var(--accent); background: rgba(14, 165, 233, 0.05); }
-        .status-text { font-size: 11px; font-weight: 800; color: var(--accent); margin-top: 20px; text-transform: uppercase; letter-spacing: 1.5px; }
-        .progress-container { display: none; width: 100%; background: #1f2937; height: 4px; border-radius: 10px; margin-top: 25px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: width 0.3s ease; }
-        .btn-download { display: none; width: 100%; background: var(--accent); color: white; padding: 18px; border-radius: 12px; border: none; font-weight: 800; font-size: 1rem; margin-top: 25px; cursor: pointer; transition: 0.2s; }
-        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.5); }
+        .status { font-size: 11px; font-weight: 800; color: var(--accent); margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .progress-wrap { display: none; width: 100%; background: #1f2937; height: 4px; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--accent); transition: 0.3s; }
+        .btn-dl { display: none; width: 100%; background: var(--accent); color: white; padding: 18px; border-radius: 12px; border: none; font-weight: 800; margin-top: 20px; cursor: pointer; font-size: 15px; }
     </style>
 </head>
 <body>
 
-<div class="main-card">
+<div class="wrapper">
     <div class="hero">
         <h1>PDF to Word</h1>
-        <p>Reconstruct documents privately in your browser.</p>
+        <p>Private reconstruction in your browser.</p>
     </div>
 
     <div class="drop-zone" id="dz">
-        <input type="file" id="fi" hidden accept="application/pdf">
-        <div id="idle-view">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-            <h3 style="margin:0;">Select PDF File</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-top: 8px;">No data leaves your device</p>
+        <input type="file" id="fi" hidden accept=".pdf">
+        <div id="idle-ui">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent); margin-bottom:12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <h3 style="margin:0;">Select PDF</h3>
         </div>
-        <div class="status-text" id="st">Engine Standby</div>
+        <div class="status" id="st">READY</div>
     </div>
 
-    <div class="progress-container" id="pc">
-        <div class="progress-bar" id="pb"></div>
-    </div>
-
-    <button class="btn-download" id="db">DOWNLOAD .DOCX FILE</button>
+    <div class="progress-wrap" id="pw"><div class="progress-bar" id="pb"></div></div>
+    <button class="btn-dl" id="db">DOWNLOAD WORD DOCUMENT</button>
 </div>
 
 <script>
     const st = document.getElementById('st'), fi = document.getElementById('fi'), 
           dz = document.getElementById('dz'), db = document.getElementById('db'),
-          pc = document.getElementById('pc'), pb = document.getElementById('pb');
+          pw = document.getElementById('pw'), pb = document.getElementById('pb');
 
     dz.onclick = () => fi.click();
 
@@ -58,37 +53,32 @@
         const file = e.target.files[0];
         if (!file) return;
 
-        // UI Transition
-        st.innerText = "Securing Environment...";
-        pc.style.display = "block";
+        st.innerText = "Initializing Engine...";
+        pw.style.display = "block";
         pb.style.width = "10%";
 
         try {
+            // FIX 1: Explicitly force the library to use internal memory for Wix compatibility
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
-            
-            // THE FIX: We use an empty string for the worker. 
-            // This forces the library to use the "FakeWorker", which is 
-            // immune to browser permission and cross-origin blocks.
             pdfjsLib.GlobalWorkerOptions.workerSrc = ''; 
 
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({
                 data: arrayBuffer,
-                disableWorker: true, // This is the shield against "System Errors"
-                verbosity: 0
+                disableWorker: true, // Forces Main Thread
+                useSystemFonts: true
             });
 
             const pdf = await loadingTask.promise;
             const sections = [];
 
             for (let i = 1; i <= pdf.numPages; i++) {
-                st.innerText = `Reconstructing Page ${i} / ${pdf.numPages}`;
-                pb.style.width = `${(i / pdf.numPages) * 85}%`;
+                st.innerText = `Processing: ${Math.round((i/pdf.numPages)*100)}%`;
+                pb.style.width = `${(i / pdf.numPages) * 90}%`;
 
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
                 
-                // Group text into logical rows
                 const rows = {};
                 textContent.items.forEach(item => {
                     const y = Math.round(item.transform[5]);
@@ -103,37 +93,41 @@
                         spacing: { before: 120 }
                     });
                 });
-
                 sections.push({ children: paragraphs });
             }
 
             pb.style.width = "100%";
-            st.innerText = "✓ Conversion Successful";
+            st.innerText = "✓ Success";
             st.style.color = "var(--success)";
+            
+            // FIX 2: Generate the Blob immediately and keep it in memory
+            const doc = new docx.Document({ sections });
+            const docBlob = await docx.Packer.toBlob(doc);
+            
             db.style.display = "block";
-
             db.onclick = () => {
-                const doc = new docx.Document({ sections });
-                docx.Packer.toBlob(doc).then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = file.name.replace(".pdf", "") + "_Valipod.docx";
-                    document.body.appendChild(a);
-                    a.click();
+                // FIX 3: Hardened download trigger for Wix Iframes
+                const url = window.URL.createObjectURL(docBlob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = file.name.replace(".pdf", "") + "_Valipod.docx";
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup to prevent memory leaks
+                setTimeout(() => {
                     document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                });
+                    window.URL.revokeObjectURL(url);
+                }, 100);
             };
 
         } catch (err) {
             console.error(err);
-            st.innerText = "Error: Use a Standard PDF File";
+            st.innerText = "Error: File Encrypted or Blocked";
             st.style.color = "#ef4444";
-            pb.style.background = "#ef4444";
         }
     };
 </script>
-
 </body>
 </html>
